@@ -1,13 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Color Strips with CSS</title>
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- <div class="stripe"></div> -->
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
 
-</head>
-<body>
-    <div class="stripe"></div>
-</body>
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const stripes = [];
+
+      function createStripe() {
+        return {
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          width: 300,
+          height: 50,
+          speed: Math.random() * 3 + 1,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+          angle: Math.random() * 360,
+        };
+      }
+
+      for (let i = 0; i < 10; i++) {
+        stripes.push(createStripe());
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        stripes.forEach((stripe) => {
+          ctx.save();
+          ctx.translate(stripe.x, stripe.y);
+          ctx.rotate((stripe.angle * Math.PI) / 180);
+          const gradient = ctx.createLinearGradient(0, 0, stripe.width, 0);
+          gradient.addColorStop(0, "rgba(255,0,150,0.5)");
+          gradient.addColorStop(1, "rgba(0,255,255,0.5)");
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, stripe.width, stripe.height);
+          ctx.restore();
+
+          stripe.x += stripe.speed;
+          if (stripe.x > canvas.width) stripe.x = -stripe.width;
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
 </html>

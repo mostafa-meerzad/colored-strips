@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const lines = [];
+
+      function createLine() {
+        return {
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          length: Math.random() * 200 + 50,
+          speed: Math.random() * 2 + 1,
+          progress: 0, // Controls the glowing dot movement
+          angle: Math.random() * Math.PI * 2,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+        };
+      }
+
+      for (let i = 0; i < 10; i++) {
+        lines.push(createLine());
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        lines.forEach((line) => {
+          const x2 = line.x + Math.cos(line.angle) * line.length;
+          const y2 = line.y + Math.sin(line.angle) * line.length;
+
+          // Draw the line
+          ctx.strokeStyle = line.color;
+          ctx.lineWidth = 2;
+          ctx.globalAlpha = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(line.x, line.y);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          // Glowing dot
+          const dotX = line.x + Math.cos(line.angle) * line.progress;
+          const dotY = line.y + Math.sin(line.angle) * line.progress;
+
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = line.color;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = line.color;
+          ctx.beginPath();
+          ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Move the dot along the line
+          line.progress += line.speed;
+          if (line.progress > line.length) line.progress = 0;
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
